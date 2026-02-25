@@ -15,33 +15,46 @@ Use this skill as a single operational system for: issue, pr, check, coding, and
 - Never run GitHub write actions without explicit user authorization.
 - Keep all paths configurable; avoid machine-specific defaults.
 
+## Script vs Manual Boundary
+
+- **Scripts** produce structured evidence (JSON + MD) for issue/PR/OSS snapshots and issue drafts; they do not make final triage decisions or perform write actions.
+- **You** (agent) must: interpret snapshot output, apply protocol rules, produce risk notes and exact next action, and run local validation (check protocol). Never run `gh pr create` / `gh issue create` or destructive git commands without explicit user authorization.
+- Each reference (issue, pr, check, oss, coding) includes an **Automation coverage** table: script fields vs manual checks.
+
 ## Workflow Router
 
+Route by scenario; each node lists **when** to use it and **what** to read/run.
+
 1. **Issue triage / investigation**
+   - **When**: User asks to triage an issue, investigate repro, assess duplicates, or recommend next action (`analyze` / `ask-maintainer` / `implement` / `skip`).
    - Read `references/issue.md`.
    - Run `scripts/preflight.py` once per environment.
    - Run `scripts/issue_snapshot.py` to capture full status.
 
 2. **PR triage / merge readiness**
+   - **When**: User asks whether a PR is ready to merge, what’s blocking it, or for review/risk notes.
    - Read `references/pr.md`.
    - Run `scripts/pr_snapshot.py` before any recommendation.
 
 3. **Code checks / implementation validation**
+   - **When**: Implementing a fix or feature, or validating before marking a task complete (lint/build/test, semantic impact, task handover checklist).
    - Read `references/check.md` and `references/coding.md`.
    - Run local validation gates before marking complete.
 
 4. **OSS scouting / prioritization**
+   - **When**: User asks to find OSS contribution opportunities, rank repos, or filter issues by impact/activity.
    - Read `references/oss.md`.
    - Run `scripts/oss_scout.py` for structured candidate ranking.
 
 5. **Issue draft generation**
+   - **When**: User needs a new issue body in standard format (Summary, Steps, Expected, Observed); align with `references/issue.md` style mimicry.
    - Use `scripts/issue_draft.py` to generate consistent markdown bodies.
 
 ## Default Output Convention
 
 - Write outputs to `./outputs/how-to-code/` by default.
-- Accept `--out-dir` to override output destination.
-- Generate both `.json` (machine-readable) and `.md` (review-ready) whenever possible.
+- Scripts accept `--out-dir` to override output destination; `issue_draft.py` also accepts `--out` to set the output file path directly.
+- Generate both `.json` (machine-readable) and `.md` (review-ready) whenever possible (snapshot and OSS scripts; issue_draft produces `.md` only).
 
 ## Scripts
 

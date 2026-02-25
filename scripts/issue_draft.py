@@ -53,11 +53,15 @@ def render(d):
 def main():
     parser = argparse.ArgumentParser(description="Generate standardized GitHub issue markdown from JSON input")
     parser.add_argument("--input", required=True, help="JSON input path")
-    parser.add_argument("--out", default="./outputs/how-to-code/issue_draft.md", help="Output markdown path")
+    parser.add_argument("--out-dir", default="./outputs/how-to-code", help="Output directory (used if --out not set)")
+    parser.add_argument("--out", help="Output file path (overrides --out-dir); default: <out-dir>/issue_draft.md")
     args = parser.parse_args()
 
     data = load_input(args.input)
-    out_path = Path(args.out)
+    if args.out:
+        out_path = Path(args.out)
+    else:
+        out_path = Path(args.out_dir) / "issue_draft.md"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(render(data), encoding="utf-8")
     print(str(out_path))
